@@ -1,39 +1,37 @@
-from sqlalchemy.orm import Session
-from .models import Song
+from .database import get_client
 from .scraper.parser import SongData
 
-
-def get_songs(db: Session) -> list[Song]:
-    return db.query(Song).order_by(Song.scraped_at.desc()).all()
-
-
-def get_song(db: Session, song_id: int) -> Song | None:
-    return db.query(Song).filter(Song.id == song_id).first()
+COLS_LIST = "id,title,artist,key,capo,source_url,scraped_at"
+COLS_ALL = "*"
 
 
-def get_song_by_url(db: Session, url: str) -> Song | None:
-    return db.query(Song).filter(Song.source_url == url).first()
+def get_songs() -> list[dict]:
+    res = get_client().table("songs").select(COLS_LIST).order("scraped_at", desc=True).execute()
+    return res.data
 
 
-def create_song(db: Session, data: SongData) -> Song:
-    song = Song(
-        title=data.title,
-        artist=data.artist,
-        key=data.key,
-        capo=data.capo,
-        content=data.content,
-        source_url=data.source_url,
-    )
-    db.add(song)
-    db.commit()
-    db.refresh(song)
-    return song
+def get_song(song_id: int) -> dict | None:
+    res = get_client().table("songs").select(COLS_ALL).eq("id", song_id).execute()
+    return res.data[0] if res.data else None
 
 
-def delete_song(db: Session, song_id: int) -> bool:
-    song = get_song(db, song_id)
-    if not song:
-        return False
-    db.delete(song)
-    db.commit()
-    return True
+def get_song_by_url(url: str) -> dict | None:
+    res = get_client().table("songs").select(COLS_ALL).eq("source_url", url).execute()
+    return res.data[0] if res.data else None
+
+
+def create_song(data: SongData) -> dict:
+    res = get_client().table("songs").insert({
+        "title": data.title,
+        "artist": data.artist,
+        "key": data.key,
+        "capo": data.capo,
+        "content": data.content,
+        "source_url": data.source_url,
+    }).execute()
+    return res.data[0]
+
+
+def delete_song(song_id: int) -> bool:
+    res = get_client().table("songs").delete().eq("id", song_id).execute()
+    return len(res.data) > 0

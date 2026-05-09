@@ -13,7 +13,8 @@ class SongOut(SongBase):
     id: int
     source_url: str
     scraped_at: datetime
-    model_config = ConfigDict(from_attributes=True)
+    # from_attributes pour ORM ; populate_by_name pour dicts Supabase
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
 class SongDetail(SongOut):

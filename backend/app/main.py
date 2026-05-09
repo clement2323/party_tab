@@ -1,10 +1,7 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .database import engine, Base
 from .api.songs import router as songs_router
-
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="musique-partoche")
 
