@@ -1,6 +1,8 @@
 import type { Song, SongDetail, ScrapeResponse } from "../types/song";
 
-const BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+// En prod (Vercel monorepo) : même domaine, routePrefix "/_/backend"
+// En dev local : http://localhost:8000 via VITE_API_URL dans .env.local
+const BASE = import.meta.env.VITE_API_URL ?? "/_/backend";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, init);
