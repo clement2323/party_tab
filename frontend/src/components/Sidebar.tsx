@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Song } from "../types/song";
 import { deleteSong } from "../api/songs";
 
@@ -9,6 +10,8 @@ interface Props {
 }
 
 export function Sidebar({ songs, selectedId, onSelect, onDelete }: Props) {
+  const [query, setQuery] = useState("");
+
   async function handleDelete(e: React.MouseEvent, id: number) {
     e.stopPropagation();
     if (!confirm("Supprimer cette chanson ?")) return;
@@ -16,31 +19,54 @@ export function Sidebar({ songs, selectedId, onSelect, onDelete }: Props) {
     onDelete();
   }
 
-  if (songs.length === 0) {
-    return <p className="sidebar-empty">Aucune chanson — colle une URL ci-dessus.</p>;
-  }
+  const filtered = query.trim()
+    ? songs.filter(
+        (s) =>
+          s.title.toLowerCase().includes(query.toLowerCase()) ||
+          s.artist.toLowerCase().includes(query.toLowerCase())
+      )
+    : songs;
 
   return (
-    <ul className="song-list">
-      {songs.map((song) => (
-        <li
-          key={song.id}
-          className={`song-item${song.id === selectedId ? " selected" : ""}`}
-          onClick={() => onSelect(song.id)}
-        >
-          <div className="song-item-text">
-            <span className="song-item-title">{song.title}</span>
-            <span className="song-item-artist">{song.artist}</span>
-          </div>
-          <button
-            className="delete-btn"
-            onClick={(e) => handleDelete(e, song.id)}
-            title="Supprimer"
-          >
-            ✕
-          </button>
-        </li>
-      ))}
-    </ul>
+    <>
+      <div className="search-wrapper">
+        <span className="search-icon">🔍</span>
+        <input
+          className="search-input"
+          type="search"
+          placeholder="Rechercher…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+      </div>
+
+      {filtered.length === 0 ? (
+        <p className="sidebar-empty">
+          {query ? "Aucun résultat." : "Aucune chanson — colle une URL ci-dessus."}
+        </p>
+      ) : (
+        <ul className="song-list">
+          {filtered.map((song) => (
+            <li
+              key={song.id}
+              className={`song-item${song.id === selectedId ? " selected" : ""}`}
+              onClick={() => onSelect(song.id)}
+            >
+              <div className="song-item-text">
+                <span className="song-item-title">{song.title}</span>
+                <span className="song-item-artist">{song.artist}</span>
+              </div>
+              <button
+                className="delete-btn"
+                onClick={(e) => handleDelete(e, song.id)}
+                title="Supprimer"
+              >
+                ✕
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
   );
 }
