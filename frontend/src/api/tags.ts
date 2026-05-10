@@ -23,6 +23,13 @@ export const createTag = (name: string, color: string) =>
     body: JSON.stringify({ name, color }),
   });
 
+export const updateTag = (id: number, name: string, color: string) =>
+  request<Tag>(`/tags/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, color }),
+  });
+
 export const deleteTag = (id: number) =>
   request<void>(`/tags/${id}`, { method: "DELETE" });
 

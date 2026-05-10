@@ -91,6 +91,18 @@ body {
 }
 
 .scrape-form input[type="url"]:focus { border-color: var(--accent); }
+.scrape-form input:not([type="url"]) {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid #313244;
+  background: #0d0d1a;
+  color: var(--text);
+  font-size: 12px;
+  outline: none;
+  transition: border-color .15s;
+}
+.scrape-form input:not([type="url"]):focus { border-color: var(--accent); }
 .scrape-form input::placeholder { color: var(--muted); }
 
 .scrape-form button {
@@ -498,6 +510,53 @@ body {
 }
 .tag-item:hover .tag-delete-btn { opacity: 1; }
 .tag-delete-btn:hover { color: var(--red); }
+
+.tag-edit-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity .1s, color .1s;
+}
+.tag-item:hover .tag-edit-btn { opacity: 1; }
+.tag-edit-btn:hover { color: var(--accent); }
+
+.tag-edit-form {
+  padding: 4px 10px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.tag-edit-form input {
+  background: #0d0d1a;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 12px;
+  padding: 4px 8px;
+  outline: none;
+  width: 100%;
+}
+.tag-edit-actions {
+  display: flex;
+  gap: 4px;
+}
+.tag-edit-actions button {
+  flex: 1;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 3px;
+}
+.tag-edit-actions button[type="submit"] { border-color: var(--accent); color: var(--accent); }
+.tag-edit-actions button[type="submit"]:disabled { opacity: .4; cursor: default; }
 
 /* ── TagEditor ───────────────────────────────────────── */
 .tag-editor { margin: 12px 0 14px; }

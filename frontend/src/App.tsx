@@ -48,9 +48,10 @@ function App() {
     );
   }
 
-  async function handleTagsChanged() {
-    await Promise.all([loadTags(), loadSongs()]);
+  function handleTagsChanged() {
     if (selectedId != null) getSong(selectedId).then(setDetail);
+    loadTags();
+    loadSongs();
   }
 
   return (

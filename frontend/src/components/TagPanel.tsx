@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Tag } from "../types/song";
-import { createTag, deleteTag } from "../api/tags";
+import { createTag, updateTag, deleteTag } from "../api/tags";
 
 const PALETTE = [
   "#89b4fa", "#cba6f7", "#f38ba8", "#fab387",
@@ -18,6 +18,9 @@ export function TagPanel({ tags, activeTags, onToggle, onTagsChanged }: Props) {
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
   const [color, setColor] = useState(PALETTE[0]);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editColor, setEditColor] = useState(PALETTE[0]);
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -25,6 +28,22 @@ export function TagPanel({ tags, activeTags, onToggle, onTagsChanged }: Props) {
     await createTag(name.trim(), color);
     setName("");
     setAdding(false);
+    onTagsChanged();
+  }
+
+  function startEdit(e: React.MouseEvent, tag: Tag) {
+    e.stopPropagation();
+    setEditingId(tag.id);
+    setEditName(tag.name);
+    setEditColor(tag.color);
+    setAdding(false);
+  }
+
+  async function handleEdit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editName.trim() || editingId === null) return;
+    await updateTag(editingId, editName.trim(), editColor);
+    setEditingId(null);
     onTagsChanged();
   }
 
@@ -39,7 +58,11 @@ export function TagPanel({ tags, activeTags, onToggle, onTagsChanged }: Props) {
     <div className="tag-panel">
       <div className="tag-panel-header">
         <span>Tags</span>
-        <button className="tag-add-btn" onClick={() => setAdding(!adding)} title="Nouveau tag">
+        <button
+          className="tag-add-btn"
+          onClick={() => { setAdding(!adding); setEditingId(null); }}
+          title="Nouveau tag"
+        >
           {adding ? "✕" : "+"}
         </button>
       </div>
@@ -63,9 +86,7 @@ export function TagPanel({ tags, activeTags, onToggle, onTagsChanged }: Props) {
               />
             ))}
           </div>
-          <button type="submit" disabled={!name.trim()}>
-            Créer
-          </button>
+          <button type="submit" disabled={!name.trim()}>Créer</button>
         </form>
       )}
 
@@ -74,21 +95,42 @@ export function TagPanel({ tags, activeTags, onToggle, onTagsChanged }: Props) {
       ) : (
         <ul className="tag-list">
           {tags.map((tag) => (
-            <li
-              key={tag.id}
-              className={`tag-item${activeTags.includes(tag.id) ? " active" : ""}`}
-              onClick={() => onToggle(tag.id)}
-            >
-              <span className="tag-dot" style={{ background: tag.color }} />
-              <span className="tag-name">{tag.name}</span>
-              <span className="tag-count">{tag.song_count ?? 0}</span>
-              <button
-                className="tag-delete-btn"
-                onClick={(e) => handleDelete(e, tag.id)}
-                title="Supprimer"
-              >
-                ✕
-              </button>
+            <li key={tag.id}>
+              {editingId === tag.id ? (
+                <form className="tag-edit-form" onSubmit={handleEdit}>
+                  <input
+                    autoFocus
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                  />
+                  <div className="color-palette">
+                    {PALETTE.map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        className={`color-swatch${editColor === c ? " selected" : ""}`}
+                        style={{ background: c }}
+                        onClick={() => setEditColor(c)}
+                      />
+                    ))}
+                  </div>
+                  <div className="tag-edit-actions">
+                    <button type="submit" disabled={!editName.trim()} title="Enregistrer">✓</button>
+                    <button type="button" onClick={() => setEditingId(null)} title="Annuler">✕</button>
+                  </div>
+                </form>
+              ) : (
+                <div
+                  className={`tag-item${activeTags.includes(tag.id) ? " active" : ""}`}
+                  onClick={() => onToggle(tag.id)}
+                >
+                  <span className="tag-dot" style={{ background: tag.color }} />
+                  <span className="tag-name">{tag.name}</span>
+                  <span className="tag-count">{tag.song_count ?? 0}</span>
+                  <button className="tag-edit-btn" onClick={(e) => startEdit(e, tag)} title="Modifier">✎</button>
+                  <button className="tag-delete-btn" onClick={(e) => handleDelete(e, tag.id)} title="Supprimer">✕</button>
+                </div>
+              )}
             </li>
           ))}
         </ul>

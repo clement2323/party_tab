@@ -28,11 +28,16 @@ export const scrapeSong = (url: string) =>
     body: JSON.stringify({ url }),
   });
 
-export const songFromText = (text: string, sourceUrl: string) =>
+export const songFromText = (
+  text: string,
+  sourceUrl: string,
+  title?: string,
+  artist?: string,
+) =>
   request<ScrapeResponse>("/songs/from-text", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text, source_url: sourceUrl }),
+    body: JSON.stringify({ text, source_url: sourceUrl, title, artist }),
   });
 
 export const deleteSong = (id: number) =>

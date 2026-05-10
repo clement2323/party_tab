@@ -12,6 +12,8 @@ export function ScrapeForm({ onSuccess }: Props) {
   const [info, setInfo] = useState<string | null>(null);
   const [showPaste, setShowPaste] = useState(false);
   const [pasteText, setPasteText] = useState("");
+  const [pasteTitle, setPasteTitle] = useState("");
+  const [pasteArtist, setPasteArtist] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -47,10 +49,17 @@ export function ScrapeForm({ onSuccess }: Props) {
     setInfo(null);
     setLoading(true);
     try {
-      const res = await songFromText(pasteText, url.trim());
+      const res = await songFromText(
+        pasteText,
+        url.trim(),
+        pasteTitle.trim() || undefined,
+        pasteArtist.trim() || undefined,
+      );
       setInfo(`"${res.song.title}" ajoutée !`);
       setUrl("");
       setPasteText("");
+      setPasteTitle("");
+      setPasteArtist("");
       setShowPaste(false);
       onSuccess();
     } catch (err: unknown) {
@@ -84,6 +93,18 @@ export function ScrapeForm({ onSuccess }: Props) {
             value={pasteText}
             onChange={(e) => setPasteText(e.target.value)}
             rows={5}
+            disabled={loading}
+          />
+          <input
+            placeholder="Titre (optionnel)"
+            value={pasteTitle}
+            onChange={(e) => setPasteTitle(e.target.value)}
+            disabled={loading}
+          />
+          <input
+            placeholder="Artiste (optionnel)"
+            value={pasteArtist}
+            onChange={(e) => setPasteArtist(e.target.value)}
             disabled={loading}
           />
           <button type="submit" disabled={loading || !pasteText.trim()}>

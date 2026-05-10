@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
-from ..schemas import TagCreate, TagOut
-from ..crud import get_tags, create_tag, delete_tag
+from ..schemas import TagCreate, TagUpdate, TagOut
+from ..crud import get_tags, create_tag, delete_tag, update_tag
 
 router = APIRouter()
 
@@ -18,6 +18,14 @@ def add_tag(body: TagCreate):
         if "unique" in str(e).lower():
             raise HTTPException(status.HTTP_409_CONFLICT, detail="Ce tag existe déjà")
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e))
+    return TagOut.model_validate(tag)
+
+
+@router.patch("/{tag_id}", response_model=TagOut)
+def edit_tag(tag_id: int, body: TagUpdate):
+    tag = update_tag(tag_id, body.name, body.color)
+    if tag is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Tag introuvable")
     return TagOut.model_validate(tag)
 
 

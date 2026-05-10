@@ -98,6 +98,23 @@ def delete_tag(tag_id: int) -> bool:
     return len(res.data) > 0
 
 
+def update_tag(tag_id: int, name: str | None, color: str | None) -> dict | None:
+    updates: dict = {}
+    if name is not None:
+        updates["name"] = name
+    if color is not None:
+        updates["color"] = color
+    if not updates:
+        return None
+    res = get_client().table("tags").update(updates).eq("id", tag_id).execute()
+    if not res.data:
+        return None
+    t = res.data[0]
+    count_res = get_client().table("song_tags").select("song_id").eq("tag_id", tag_id).execute()
+    t["song_count"] = len(count_res.data)
+    return t
+
+
 def set_song_tags(song_id: int, tag_ids: list[int]) -> dict | None:
     client = get_client()
     client.table("song_tags").delete().eq("song_id", song_id).execute()

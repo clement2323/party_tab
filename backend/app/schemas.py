@@ -15,6 +15,11 @@ class TagCreate(BaseModel):
     color: str = "#89b4fa"
 
 
+class TagUpdate(BaseModel):
+    name: str | None = None
+    color: str | None = None
+
+
 class SongBase(BaseModel):
     title: str
     artist: str
@@ -41,6 +46,8 @@ class ScrapeRequest(BaseModel):
 class PasteRequest(BaseModel):
     text: str
     source_url: str = ""
+    title: str | None = None
+    artist: str | None = None
 
 
 class ScrapeResponse(BaseModel):

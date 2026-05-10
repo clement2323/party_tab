@@ -99,8 +99,11 @@ def song_from_text(body: PasteRequest):
         if existing:
             return ScrapeResponse(song=SongDetail.model_validate(existing), already_existed=True)
 
+    final_title = body.title.strip() if body.title else title
+    final_artist = body.artist.strip() if body.artist else artist
+
     data = SongData(
-        title=title, artist=artist, key=None, capo=0,
+        title=final_title, artist=final_artist, key=None, capo=0,
         content=content, source_url=body.source_url or f"paste://{hash(text)}",
     )
     song = create_song(data)
