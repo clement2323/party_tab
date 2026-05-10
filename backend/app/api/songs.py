@@ -8,9 +8,9 @@ from ..crud import (
     get_songs, get_song, get_song_by_url, create_song,
     update_song, delete_song, set_song_tags,
 )
-from ..scraper.fetcher import fetch_page, fetch_ug_page
-from ..scraper.parser import parse_song
-from ..scraper.ug_parser import parse_ug_song
+from ..scraper.fetcher import fetch_page, fetch_ug_page, fetch_ug_api
+from ..scraper.parser import parse_song, SongData
+from ..scraper.ug_parser import parse_ug_song, parse_ug_api_song
 from ..scraper.exceptions import ScrapeError, ParseError
 
 router = APIRouter()
@@ -32,6 +32,18 @@ def _validate_url(url: str) -> str:
     return host
 
 
+def _scrape_ug(url: str) -> SongData:
+    """Try mobile API first (bypasses Cloudflare), fall back to HTML scraping."""
+    try:
+        api_data = fetch_ug_api(url)
+        return parse_ug_api_song(api_data, url)
+    except (ScrapeError, ParseError):
+        pass  # fall through to HTML scraping
+
+    html, canonical_url = fetch_ug_page(url)  # raises ScrapeError if blocked
+    return parse_ug_song(html, canonical_url)
+
+
 @router.post("/scrape", response_model=ScrapeResponse, status_code=status.HTTP_201_CREATED)
 def scrape_song(body: ScrapeRequest):
     host = _validate_url(body.url)
@@ -43,24 +55,21 @@ def scrape_song(body: ScrapeRequest):
 
     try:
         if is_ug:
-            html, canonical_url = fetch_ug_page(body.url)
+            data = _scrape_ug(body.url)
         else:
             html, canonical_url = fetch_page(body.url)
+            existing = get_song_by_url(canonical_url)
+            if existing:
+                return ScrapeResponse(song=SongDetail.model_validate(existing), already_existed=True)
+            data = parse_song(html, canonical_url)
     except ScrapeError as e:
         err_msg = str(e)
-        if "cloudflare" in err_msg.lower():
+        if is_ug and "cloudflare" in err_msg.lower():
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail={"code": "ug_blocked", "message": err_msg},
             )
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=err_msg)
-
-    existing = get_song_by_url(canonical_url)
-    if existing:
-        return ScrapeResponse(song=SongDetail.model_validate(existing), already_existed=True)
-
-    try:
-        data = parse_ug_song(html, canonical_url) if is_ug else parse_song(html, canonical_url)
     except ParseError as e:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e))
 

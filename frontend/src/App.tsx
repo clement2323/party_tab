@@ -71,6 +71,10 @@ function App() {
           selectedId={selectedId}
           onSelect={handleSelect}
           onDelete={handleDelete}
+          onSongChanged={() => {
+            if (selectedId != null) getSong(selectedId).then(setDetail);
+            loadSongs();
+          }}
           tags={tags}
           activeTags={activeTags}
           onToggleTag={toggleTag}

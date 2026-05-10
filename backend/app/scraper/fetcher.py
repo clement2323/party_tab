@@ -30,6 +30,41 @@ def fetch_page(url: str) -> tuple[str, str]:
     return html, canonical
 
 
+def fetch_ug_api(url: str) -> dict:
+    """Fetch tab data from UG's mobile API — not behind Cloudflare."""
+    import re
+    match = re.search(r"-(\d+)/?$", url.strip())
+    if not match:
+        raise ScrapeError("Impossible d'extraire l'ID de tab depuis l'URL UG")
+    tab_id = match.group(1)
+    api_url = (
+        f"https://api.ultimate-guitar.com/api/v1/tab/view"
+        f"?tab_id={tab_id}&marketing_type=NONE"
+    )
+    try:
+        resp = requests.get(api_url, headers={
+            "User-Agent": "UGT_ANDROID/4.10.12 (Linux; Android 11)",
+            "Accept": "application/json",
+            "Accept-Language": "en-US,en;q=0.9",
+        }, timeout=10)
+    except requests.RequestException as e:
+        raise ScrapeError(f"Erreur réseau API UG : {e}") from e
+
+    if resp.status_code in (401, 403):
+        raise ScrapeError(f"API UG requiert une authentification ({resp.status_code})")
+    if not resp.ok:
+        raise ScrapeError(f"API UG a retourné {resp.status_code}")
+
+    try:
+        data = resp.json()
+    except Exception as e:
+        raise ScrapeError(f"Réponse API UG non valide : {e}") from e
+
+    if "tab_view" not in data or "wiki_tab" not in data.get("tab_view", {}):
+        raise ScrapeError("Structure API UG inattendue")
+    return data
+
+
 def fetch_ug_page(url: str) -> tuple[str, str]:
     """Fetch Ultimate Guitar page using cloudscraper to bypass Cloudflare."""
     try:

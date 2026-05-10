@@ -233,6 +233,77 @@ body {
 .song-item:hover .delete-btn { opacity: 1; }
 .delete-btn:hover { color: var(--red); background: rgba(243,139,168,.12); }
 
+.song-rename-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity .15s, color .15s;
+}
+.song-item:hover .song-rename-btn { opacity: 1; }
+.song-rename-btn:hover { color: var(--accent); }
+
+/* Inline edit form inside song list */
+.song-inline-edit {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--item-hover);
+  border-radius: 8px;
+  margin: 2px 6px;
+}
+
+.song-inline-title {
+  background: #0d0d1a;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 10px;
+  outline: none;
+  width: 100%;
+}
+
+.song-inline-artist {
+  background: #0d0d1a;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 5px 10px;
+  outline: none;
+  width: 100%;
+}
+.song-inline-artist:focus { border-color: var(--accent); }
+
+.song-inline-actions {
+  display: flex;
+  gap: 6px;
+}
+.song-inline-actions button {
+  flex: 1;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+}
+.song-inline-actions button[type="submit"] {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 700;
+}
+.song-inline-actions button[type="submit"]:disabled { opacity: .4; cursor: default; }
+
 /* ── Content area ────────────────────────────────────── */
 .content {
   flex: 1;
@@ -751,5 +822,6 @@ body {
   .song-header h1 { font-size: 22px; }
   .partition { font-size: 14px; }
   .delete-btn { opacity: 1; }
+  .song-rename-btn { opacity: 1; }
   .song-edit-btn { opacity: 1; }
 }

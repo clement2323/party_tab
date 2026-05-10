@@ -30,6 +30,31 @@ def _ug_to_chordpro(raw: str) -> str:
     return "\n".join(out)
 
 
+def parse_ug_api_song(data: dict, source_url: str) -> SongData:
+    """Parse UG mobile API response (no HTML parsing needed)."""
+    try:
+        tab = data["tab"]
+        tab_view = data["tab_view"]
+        title = tab.get("song_name", "Titre inconnu").strip().title()
+        artist = tab.get("artist_name", "Artiste inconnu").strip().title()
+        meta = tab_view.get("meta", {})
+        capo_raw = meta.get("capo", 0)
+        capo = int(capo_raw) if capo_raw else 0
+        key = tab.get("tonality_name") or None
+        raw_content = tab_view["wiki_tab"].get("content", "")
+    except (KeyError, TypeError, ValueError) as e:
+        raise ParseError(f"Données API UG invalides : {e}") from e
+
+    return SongData(
+        title=title,
+        artist=artist,
+        key=key,
+        capo=capo,
+        content=_ug_to_chordpro(raw_content),
+        source_url=source_url,
+    )
+
+
 def parse_ug_song(html: str, source_url: str) -> SongData:
     soup = BeautifulSoup(html, "html.parser")
 
