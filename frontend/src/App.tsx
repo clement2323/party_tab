@@ -15,8 +15,13 @@ function App() {
   const [mobileView, setMobileView] = useState<"list" | "detail">("list");
 
   async function loadSongs() {
+    const cached = localStorage.getItem("partoche_songs");
+    if (cached && songs.length === 0) {
+      try { setSongs(JSON.parse(cached)); } catch { /* ignore bad cache */ }
+    }
     const list = await getSongs();
     setSongs(list);
+    localStorage.setItem("partoche_songs", JSON.stringify(list));
   }
 
   async function loadTags() {

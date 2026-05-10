@@ -62,6 +62,13 @@ export function Sidebar({ songs, selectedId, onSelect, onDelete, tags, activeTag
                 <span className="song-item-title">{song.title}</span>
                 <span className="song-item-artist">{song.artist}</span>
               </div>
+              {song.tags.length > 0 && (
+                <div className="song-tag-dots">
+                  {song.tags.slice(0, 6).map((t) => (
+                    <span key={t.id} className="song-tag-dot" style={{ background: t.color }} />
+                  ))}
+                </div>
+              )}
               <button
                 className="delete-btn"
                 onClick={(e) => handleDelete(e, song.id)}

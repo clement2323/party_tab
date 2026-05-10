@@ -181,7 +181,21 @@ body {
   padding-left: 11px;
 }
 
-.song-item-text { flex: 1; min-width: 0; }
+.song-item-text { flex: 1; min-width: 0; overflow: hidden; }
+
+.song-tag-dots {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.song-tag-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
 
 .song-item-title {
   display: block;

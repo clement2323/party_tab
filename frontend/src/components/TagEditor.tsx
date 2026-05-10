@@ -10,8 +10,12 @@ interface Props {
 }
 
 export function TagEditor({ songId, songTags, allTags, onChange }: Props) {
+  const [localTags, setLocalTags] = useState<Tag[]>(songTags);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  // Sync if parent reloads (background refresh)
+  useEffect(() => { setLocalTags(songTags); }, [songTags]);
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -21,19 +25,23 @@ export function TagEditor({ songId, songTags, allTags, onChange }: Props) {
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
-  async function toggle(tagId: number) {
-    const current = songTags.map((t) => t.id);
-    const next = current.includes(tagId)
-      ? current.filter((id) => id !== tagId)
-      : [...current, tagId];
-    await setSongTags(songId, next);
-    onChange();
+  function toggle(tagId: number) {
+    const currentIds = localTags.map((t) => t.id);
+    const nextIds = currentIds.includes(tagId)
+      ? currentIds.filter((id) => id !== tagId)
+      : [...currentIds, tagId];
+
+    // Update UI immediately
+    setLocalTags(allTags.filter((t) => nextIds.includes(t.id)));
+
+    // Send request in background, then refresh sidebar counts
+    setSongTags(songId, nextIds).then(() => onChange());
   }
 
   return (
     <div className="tag-editor" ref={ref}>
       <div className="tag-editor-pills">
-        {songTags.map((tag) => (
+        {localTags.map((tag) => (
           <span
             key={tag.id}
             className="tag-pill"
@@ -61,7 +69,7 @@ export function TagEditor({ songId, songTags, allTags, onChange }: Props) {
                 <p className="tag-dropdown-empty">Crée d'abord un tag dans la sidebar.</p>
               ) : (
                 allTags.map((tag) => {
-                  const active = songTags.some((t) => t.id === tag.id);
+                  const active = localTags.some((t) => t.id === tag.id);
                   return (
                     <label key={tag.id} className={`tag-dropdown-item${active ? " checked" : ""}`}>
                       <input
