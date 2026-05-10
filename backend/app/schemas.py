@@ -39,6 +39,11 @@ class SongDetail(SongOut):
     content: str
 
 
+class SongUpdate(BaseModel):
+    title: str | None = None
+    artist: str | None = None
+
+
 class ScrapeRequest(BaseModel):
     url: str
 

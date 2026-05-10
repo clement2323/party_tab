@@ -70,6 +70,17 @@ def create_song(data: SongData) -> dict:
     return song
 
 
+def update_song(song_id: int, title: str | None, artist: str | None) -> dict | None:
+    updates: dict = {}
+    if title is not None:
+        updates["title"] = title
+    if artist is not None:
+        updates["artist"] = artist
+    if updates:
+        get_client().table("songs").update(updates).eq("id", song_id).execute()
+    return get_song(song_id)
+
+
 def delete_song(song_id: int) -> bool:
     res = get_client().table("songs").delete().eq("id", song_id).execute()
     return len(res.data) > 0

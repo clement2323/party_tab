@@ -302,6 +302,83 @@ body {
 }
 .source-link:hover { color: var(--accent); }
 
+/* ── Song title edit ─────────────────────────────────── */
+.song-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.song-edit-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #bbb;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity .15s, color .15s;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+.song-title-row:hover .song-edit-btn { opacity: 1; }
+.song-edit-btn:hover { color: var(--chord); }
+
+.song-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.song-edit-title {
+  font-size: 26px;
+  font-weight: 800;
+  border: none;
+  border-bottom: 2px solid var(--chord);
+  outline: none;
+  background: transparent;
+  color: #0f0f1a;
+  width: 100%;
+  padding: 2px 0;
+  letter-spacing: -.5px;
+}
+
+.song-edit-artist {
+  font-size: 15px;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  outline: none;
+  background: transparent;
+  color: #666;
+  width: 100%;
+  padding: 2px 0;
+}
+
+.song-edit-actions {
+  display: flex;
+  gap: 8px;
+}
+.song-edit-actions button {
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.song-edit-actions button[type="submit"] {
+  background: var(--chord);
+  color: #fff;
+}
+.song-edit-actions button[type="submit"]:disabled { opacity: .45; cursor: default; }
+.song-edit-actions button[type="button"] {
+  background: #eee;
+  color: #555;
+}
+
 /* ── Partition ───────────────────────────────────────── */
 .partition {
   font-family: var(--mono);
@@ -658,6 +735,7 @@ body {
   .mobile-hidden { display: none !important; }
 
   .song-header h1 { font-size: 22px; }
-
   .partition { font-size: 14px; }
+  .delete-btn { opacity: 1; }
+  .song-edit-btn { opacity: 1; }
 }

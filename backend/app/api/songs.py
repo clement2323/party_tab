@@ -2,11 +2,11 @@ from urllib.parse import urlparse
 from fastapi import APIRouter, HTTPException, status
 from ..schemas import (
     ScrapeRequest, PasteRequest, ScrapeResponse,
-    SetTagsRequest, SongDetail, SongOut,
+    SetTagsRequest, SongUpdate, SongDetail, SongOut,
 )
 from ..crud import (
     get_songs, get_song, get_song_by_url, create_song,
-    delete_song, set_song_tags,
+    update_song, delete_song, set_song_tags,
 )
 from ..scraper.fetcher import fetch_page, fetch_ug_page
 from ..scraper.parser import parse_song
@@ -118,6 +118,14 @@ def list_songs():
 @router.get("/{song_id}", response_model=SongDetail)
 def get_song_detail(song_id: int):
     song = get_song(song_id)
+    if not song:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chanson introuvable")
+    return SongDetail.model_validate(song)
+
+
+@router.patch("/{song_id}", response_model=SongDetail)
+def update_song_meta(song_id: int, body: SongUpdate):
+    song = update_song(song_id, body.title, body.artist)
     if not song:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chanson introuvable")
     return SongDetail.model_validate(song)

@@ -40,5 +40,12 @@ export const songFromText = (
     body: JSON.stringify({ text, source_url: sourceUrl, title, artist }),
   });
 
+export const updateSong = (id: number, title: string, artist: string) =>
+  request<SongDetail>(`/songs/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, artist }),
+  });
+
 export const deleteSong = (id: number) =>
   request<void>(`/songs/${id}`, { method: "DELETE" });

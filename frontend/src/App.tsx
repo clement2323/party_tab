@@ -79,7 +79,15 @@ function App() {
             <button className="back-btn" onClick={() => setMobileView("list")}>
               ← Liste
             </button>
-            <ChordSheet song={detail} allTags={tags} onTagsChanged={handleTagsChanged} />
+            <ChordSheet
+              song={detail}
+              allTags={tags}
+              onTagsChanged={handleTagsChanged}
+              onSongChanged={() => {
+                if (selectedId != null) getSong(selectedId).then(setDetail);
+                loadSongs();
+              }}
+            />
           </>
         ) : (
           <div className="empty-state">
