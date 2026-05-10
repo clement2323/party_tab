@@ -1,11 +1,14 @@
-import type { SongDetail } from "../types/song";
+import type { SongDetail, Tag } from "../types/song";
 import { ChordLine } from "./ChordLine";
+import { TagEditor } from "./TagEditor";
 
 interface Props {
   song: SongDetail;
+  allTags: Tag[];
+  onTagsChanged: () => void;
 }
 
-export function ChordSheet({ song }: Props) {
+export function ChordSheet({ song, allTags, onTagsChanged }: Props) {
   const lines = song.content.split("\n");
 
   return (
@@ -17,6 +20,12 @@ export function ChordSheet({ song }: Props) {
           {song.key && <span className="badge">Tonalité : {song.key}</span>}
           {song.capo > 0 && <span className="badge">Capo {song.capo}</span>}
         </div>
+        <TagEditor
+          songId={song.id}
+          songTags={song.tags}
+          allTags={allTags}
+          onChange={onTagsChanged}
+        />
         <a
           href={song.source_url}
           target="_blank"

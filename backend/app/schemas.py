@@ -2,6 +2,19 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 
+class TagOut(BaseModel):
+    id: int
+    name: str
+    color: str
+    song_count: int = 0
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
+
+class TagCreate(BaseModel):
+    name: str
+    color: str = "#89b4fa"
+
+
 class SongBase(BaseModel):
     title: str
     artist: str
@@ -13,7 +26,7 @@ class SongOut(SongBase):
     id: int
     source_url: str
     scraped_at: datetime
-    # from_attributes pour ORM ; populate_by_name pour dicts Supabase
+    tags: list[TagOut] = []
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
@@ -25,6 +38,15 @@ class ScrapeRequest(BaseModel):
     url: str
 
 
+class PasteRequest(BaseModel):
+    text: str
+    source_url: str = ""
+
+
 class ScrapeResponse(BaseModel):
     song: SongDetail
     already_existed: bool = False
+
+
+class SetTagsRequest(BaseModel):
+    tag_ids: list[int]

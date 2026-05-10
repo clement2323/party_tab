@@ -1,15 +1,20 @@
 import { useState } from "react";
-import type { Song } from "../types/song";
+import type { Song, Tag } from "../types/song";
 import { deleteSong } from "../api/songs";
+import { TagPanel } from "./TagPanel";
 
 interface Props {
   songs: Song[];
   selectedId: number | null;
   onSelect: (id: number) => void;
   onDelete: () => void;
+  tags: Tag[];
+  activeTags: number[];
+  onToggleTag: (id: number) => void;
+  onTagsChanged: () => void;
 }
 
-export function Sidebar({ songs, selectedId, onSelect, onDelete }: Props) {
+export function Sidebar({ songs, selectedId, onSelect, onDelete, tags, activeTags, onToggleTag, onTagsChanged }: Props) {
   const [query, setQuery] = useState("");
 
   async function handleDelete(e: React.MouseEvent, id: number) {
@@ -19,16 +24,17 @@ export function Sidebar({ songs, selectedId, onSelect, onDelete }: Props) {
     onDelete();
   }
 
-  const filtered = query.trim()
-    ? songs.filter(
-        (s) =>
-          s.title.toLowerCase().includes(query.toLowerCase()) ||
-          s.artist.toLowerCase().includes(query.toLowerCase())
-      )
-    : songs;
+  const filtered = songs.filter((s) => {
+    const matchText =
+      !query.trim() ||
+      s.title.toLowerCase().includes(query.toLowerCase()) ||
+      s.artist.toLowerCase().includes(query.toLowerCase());
+    const matchTags = activeTags.every((tid) => s.tags.some((t) => t.id === tid));
+    return matchText && matchTags;
+  });
 
   return (
-    <>
+    <div className="sidebar-body">
       <div className="search-wrapper">
         <span className="search-icon">🔍</span>
         <input
@@ -42,7 +48,7 @@ export function Sidebar({ songs, selectedId, onSelect, onDelete }: Props) {
 
       {filtered.length === 0 ? (
         <p className="sidebar-empty">
-          {query ? "Aucun résultat." : "Aucune chanson — colle une URL ci-dessus."}
+          {query || activeTags.length > 0 ? "Aucun résultat." : "Aucune chanson — colle une URL ci-dessus."}
         </p>
       ) : (
         <ul className="song-list">
@@ -67,6 +73,13 @@ export function Sidebar({ songs, selectedId, onSelect, onDelete }: Props) {
           ))}
         </ul>
       )}
-    </>
+
+      <TagPanel
+        tags={tags}
+        activeTags={activeTags}
+        onToggle={onToggleTag}
+        onTagsChanged={onTagsChanged}
+      />
+    </div>
   );
 }

@@ -2,6 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .api.songs import router as songs_router
+from .api.tags import router as tags_router
 
 app = FastAPI(title="musique-partoche")
 
@@ -16,3 +17,4 @@ app.add_middleware(
 )
 
 app.include_router(songs_router, prefix="/songs")
+app.include_router(tags_router, prefix="/tags")

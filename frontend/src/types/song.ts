@@ -1,3 +1,10 @@
+export interface Tag {
+  id: number;
+  name: string;
+  color: string;
+  song_count?: number;
+}
+
 export interface Song {
   id: number;
   title: string;
@@ -6,6 +13,7 @@ export interface Song {
   capo: number;
   source_url: string;
   scraped_at: string;
+  tags: Tag[];
 }
 
 export interface SongDetail extends Song {
