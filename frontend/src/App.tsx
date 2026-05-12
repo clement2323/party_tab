@@ -25,8 +25,13 @@ function App() {
   }
 
   async function loadTags() {
+    const cached = localStorage.getItem("partoche_tags");
+    if (cached && tags.length === 0) {
+      try { setTags(JSON.parse(cached)); } catch { /* ignore */ }
+    }
     const list = await getTags();
     setTags(list);
+    localStorage.setItem("partoche_tags", JSON.stringify(list));
   }
 
   useEffect(() => { loadSongs(); loadTags(); }, []);

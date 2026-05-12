@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import type { Song, Tag } from "../types/song";
 import { deleteSong, updateSong } from "../api/songs";
 import { TagPanel } from "./TagPanel";
+import { SongTagSheet } from "./SongTagSheet";
 
 interface Props {
   songs: Song[];
@@ -23,6 +24,11 @@ export function Sidebar({
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editArtist, setEditArtist] = useState("");
+  const [tagSheetId, setTagSheetId] = useState<number | null>(null);
+  const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wasLongPress = useRef(false);
+
+  const tagSheetSong = tagSheetId != null ? songs.find((s) => s.id === tagSheetId) ?? null : null;
 
   async function handleDelete(e: React.MouseEvent, id: number) {
     e.stopPropagation();
@@ -44,6 +50,23 @@ export function Sidebar({
     await updateSong(id, editTitle.trim(), editArtist.trim());
     setEditingId(null);
     onSongChanged();
+  }
+
+  function onTouchStart(song: Song) {
+    wasLongPress.current = false;
+    pressTimer.current = setTimeout(() => {
+      wasLongPress.current = true;
+      setTagSheetId(song.id);
+    }, 500);
+  }
+
+  function onTouchEnd() {
+    if (pressTimer.current) { clearTimeout(pressTimer.current); pressTimer.current = null; }
+  }
+
+  function handleSongClick(song: Song) {
+    if (wasLongPress.current) { wasLongPress.current = false; return; }
+    onSelect(song.id);
   }
 
   const filtered = songs.filter((s) => {
@@ -102,19 +125,31 @@ export function Sidebar({
               ) : (
                 <div
                   className={`song-item${song.id === selectedId ? " selected" : ""}`}
-                  onClick={() => onSelect(song.id)}
+                  onClick={() => handleSongClick(song)}
+                  onTouchStart={() => onTouchStart(song)}
+                  onTouchEnd={onTouchEnd}
+                  onTouchMove={onTouchEnd}
                 >
                   <div className="song-item-text">
                     <span className="song-item-title">{song.title}</span>
                     <span className="song-item-artist">{song.artist}</span>
                   </div>
-                  {song.tags.length > 0 && (
-                    <div className="song-tag-dots">
-                      {song.tags.slice(0, 6).map((t) => (
-                        <span key={t.id} className="song-tag-dot" style={{ background: t.color }} />
-                      ))}
-                    </div>
-                  )}
+                  <div
+                    className="song-tag-area"
+                    onClick={(e) => { e.stopPropagation(); setTagSheetId(song.id); }}
+                  >
+                    {song.tags.length > 0 ? (
+                      song.tags.slice(0, 5).map((t) => (
+                        <span
+                          key={t.id}
+                          className="song-tag-dot"
+                          style={{ background: t.color, boxShadow: `0 0 4px ${t.color}` }}
+                        />
+                      ))
+                    ) : (
+                      <span className="song-tag-add-hint">#</span>
+                    )}
+                  </div>
                   <button
                     className="song-rename-btn"
                     onClick={(e) => startEdit(e, song)}
@@ -142,6 +177,15 @@ export function Sidebar({
         onToggle={onToggleTag}
         onTagsChanged={onTagsChanged}
       />
+
+      {tagSheetSong && (
+        <SongTagSheet
+          song={tagSheetSong}
+          allTags={tags}
+          onClose={() => setTagSheetId(null)}
+          onChanged={onTagsChanged}
+        />
+      )}
     </div>
   );
 }
