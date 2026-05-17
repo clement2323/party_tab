@@ -27,6 +27,7 @@
   --shadow: 0 4px 24px rgba(0,0,0,.45);
   --grad-accent: linear-gradient(135deg, #7dd3fc, #f0abfc);
   --grad-chord: linear-gradient(135deg, #ff6b9d, #fbbf24);
+  --grad-party: linear-gradient(110deg, #fbbf24 0%, #ff6b9d 45%, #c084fc 80%, #7dd3fc 100%);
   --glow-accent: 0 0 18px rgba(125,211,252,.45);
   --glow-soft: 0 0 10px rgba(125,211,252,.22);
   --glow-chord: 0 0 14px rgba(255,107,157,.35);
@@ -70,13 +71,21 @@ body {
 }
 
 .sidebar-header h2 {
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -.4px;
-  background: var(--grad-accent);
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -.5px;
+  background: var(--grad-party);
+  background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  filter: drop-shadow(0 0 12px rgba(255,107,157,.35));
+  animation: party-shimmer 6s linear infinite;
+}
+
+@keyframes party-shimmer {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
 }
 
 /* ── Scrape form ─────────────────────────────────────── */
@@ -117,16 +126,24 @@ body {
 .scrape-form input::placeholder { color: var(--muted); }
 
 .scrape-form button {
-  padding: 9px;
-  border-radius: 8px;
+  padding: 10px;
+  border-radius: 10px;
   border: none;
   background: var(--accent);
-  color: #1e1e2e;
-  font-weight: 700;
+  color: #0f0f1a;
+  font-weight: 800;
   font-size: 13px;
+  letter-spacing: .03em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: opacity .15s;
+  transition: transform .12s, box-shadow .2s, filter .2s;
 }
+.scrape-form button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.08) saturate(1.15);
+  box-shadow: 0 6px 24px rgba(255,107,157,.45), 0 0 18px rgba(125,211,252,.35);
+}
+.scrape-form button:active:not(:disabled) { transform: translateY(0); }
 
 .scrape-form button:disabled { opacity: .45; cursor: default; }
 .form-error { font-size: 11px; color: var(--red); }
@@ -970,8 +987,12 @@ body {
 
 /* ── Scrape form — gradient button ───────────────────── */
 .scrape-form button[type="submit"] {
-  background: var(--grad-accent);
+  background: var(--grad-party);
+  background-size: 200% auto;
+  box-shadow: 0 4px 18px rgba(255,107,157,.35), 0 0 14px rgba(125,211,252,.25);
+  animation: party-shimmer 6s linear infinite;
 }
+.scrape-form button[type="submit"]:disabled { animation: none; box-shadow: none; }
 
 /* ── AutoScroll pill ─────────────────────────────────── */
 .autoscroll {

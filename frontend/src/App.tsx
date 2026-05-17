@@ -68,7 +68,7 @@ function App() {
     <div className="app">
       <aside className={`sidebar${mobileView === "detail" ? " mobile-hidden" : ""}`}>
         <div className="sidebar-header">
-          <h2>🎸 Partoche</h2>
+          <h2>🎉 Party Tabs</h2>
         </div>
         <ScrapeForm onSuccess={loadSongs} />
         <Sidebar
