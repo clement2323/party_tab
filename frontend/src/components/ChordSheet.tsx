@@ -3,6 +3,7 @@ import type { SongDetail, Tag } from "../types/song";
 import { updateSong } from "../api/songs";
 import { ChordLine } from "./ChordLine";
 import { TagEditor } from "./TagEditor";
+import { AutoScroll } from "./AutoScroll";
 
 interface Props {
   song: SongDetail;
@@ -88,6 +89,7 @@ export function ChordSheet({ song, allTags, onTagsChanged, onSongChanged }: Prop
           <ChordLine key={i} line={line} />
         ))}
       </div>
+      <AutoScroll resetKey={song.id} />
     </div>
   );
 }

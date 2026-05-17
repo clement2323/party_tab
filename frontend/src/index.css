@@ -4,32 +4,34 @@
 /* ── Tokens ──────────────────────────────────────────── */
 :root {
   --sidebar-w: 300px;
-  --sidebar-bg: #16161e;
+  --sidebar-bg: #0d0d18;
   --sidebar-border: #2a2a3a;
   --item-hover: #1e1e2e;
   --item-selected: #252538;
-  --accent: #89b4fa;
-  --accent2: #cba6f7;
-  --chord: #f38ba8;
-  --green: #a6e3a1;
-  --red: #f38ba8;
-  --text: #cdd6f4;
-  --muted: #6c7086;
-  --bg: #1e1e2e;
-  --surface: #24243a;
-  --border: #313244;
-  --body-bg: #f5f5f7;
-  --body-text: #11111b;
+  --accent: #7dd3fc;
+  --accent2: #f0abfc;
+  --chord: #ff6b9d;
+  --chord2: #fbbf24;
+  --green: #4ade80;
+  --red: #fb7185;
+  --text: #f5f5fa;
+  --muted: #8b8ba6;
+  --bg: #14141f;
+  --surface: #1c1c2b;
+  --border: #2e2e44;
+  --body-bg: #0f0f1a;
+  --body-text: #f5f5fa;
   --mono: ui-monospace, "Cascadia Code", Consolas, monospace;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   --radius: 10px;
-  --shadow: 0 4px 24px rgba(0,0,0,.18);
-  --grad-accent: linear-gradient(135deg, #89b4fa, #cba6f7);
-  --grad-chord: linear-gradient(135deg, #f38ba8, #fab387);
-  --glow-accent: 0 0 16px rgba(137,180,250,.28);
-  --glow-soft: 0 0 8px rgba(137,180,250,.15);
-  --glass-bg: rgba(137,180,250,.06);
-  --glass-border: rgba(137,180,250,.2);
+  --shadow: 0 4px 24px rgba(0,0,0,.45);
+  --grad-accent: linear-gradient(135deg, #7dd3fc, #f0abfc);
+  --grad-chord: linear-gradient(135deg, #ff6b9d, #fbbf24);
+  --glow-accent: 0 0 18px rgba(125,211,252,.45);
+  --glow-soft: 0 0 10px rgba(125,211,252,.22);
+  --glow-chord: 0 0 14px rgba(255,107,157,.35);
+  --glass-bg: rgba(125,211,252,.08);
+  --glass-border: rgba(125,211,252,.28);
 }
 
 body {
@@ -347,7 +349,8 @@ body {
 
 .content::-webkit-scrollbar { width: 6px; }
 .content::-webkit-scrollbar-track { background: transparent; }
-.content::-webkit-scrollbar-thumb { background: #d0d0d8; border-radius: 4px; }
+.content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.content::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
 /* ── Empty state ─────────────────────────────────────── */
 .empty-state {
@@ -355,7 +358,7 @@ body {
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #aaa;
+  color: var(--muted);
   font-size: 15px;
 }
 
@@ -377,20 +380,23 @@ body {
 .song-header {
   margin-bottom: 32px;
   padding-bottom: 24px;
-  border-bottom: 1px solid #e0e0e8;
+  border-bottom: 1px solid var(--border);
 }
 
 .song-header h1 {
   font-size: 30px;
   font-weight: 800;
   letter-spacing: -.5px;
-  color: #0f0f1a;
+  background: var(--grad-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 4px;
 }
 
 .song-artist {
   font-size: 16px;
-  color: #666;
+  color: var(--muted);
   font-weight: 500;
   margin-bottom: 14px;
 }
@@ -403,18 +409,20 @@ body {
 }
 
 .badge {
-  background: #eef2ff;
-  color: #4f46e5;
+  background: rgba(125,211,252,.12);
+  color: var(--accent);
+  border: 1px solid rgba(125,211,252,.25);
   font-size: 12px;
   font-weight: 700;
   padding: 4px 12px;
   border-radius: 20px;
   letter-spacing: .02em;
+  box-shadow: var(--glow-soft);
 }
 
 .source-link {
   font-size: 12px;
-  color: #aaa;
+  color: var(--muted);
   text-decoration: none;
   transition: color .15s;
 }
@@ -432,7 +440,7 @@ body {
   background: none;
   border: none;
   font-size: 16px;
-  color: #bbb;
+  color: var(--muted);
   cursor: pointer;
   padding: 4px 6px;
   border-radius: 6px;
@@ -458,7 +466,7 @@ body {
   border-bottom: 2px solid var(--chord);
   outline: none;
   background: transparent;
-  color: #0f0f1a;
+  color: var(--text);
   width: 100%;
   padding: 2px 0;
   letter-spacing: -.5px;
@@ -467,10 +475,10 @@ body {
 .song-edit-artist {
   font-size: 15px;
   border: none;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--border);
   outline: none;
   background: transparent;
-  color: #666;
+  color: var(--muted);
   width: 100%;
   padding: 2px 0;
 }
@@ -493,8 +501,9 @@ body {
 }
 .song-edit-actions button[type="submit"]:disabled { opacity: .45; cursor: default; }
 .song-edit-actions button[type="button"] {
-  background: #eee;
-  color: #555;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
 }
 
 /* ── Partition ───────────────────────────────────────── */
@@ -502,6 +511,7 @@ body {
   font-family: var(--mono);
   font-size: 15px;
   line-height: 1.6;
+  padding-bottom: 100px;
 }
 
 .chord-line {
@@ -529,9 +539,10 @@ body {
   min-width: 1ch;
   padding-right: 4px;
   font-size: 13px;
+  text-shadow: 0 0 8px rgba(255,107,157,.35);
 }
 
-.lyric { color: #1a1a2e; }
+.lyric { color: var(--text); }
 
 .line-spacer { height: 14px; }
 
@@ -541,8 +552,9 @@ body {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .1em;
-  color: #9999aa;
+  color: var(--accent2);
   margin: 20px 0 6px;
+  text-shadow: 0 0 8px rgba(240,171,252,.3);
 }
 
 /* ── Sidebar body ────────────────────────────────────── */
@@ -804,17 +816,17 @@ body {
 .tag-editor-dropdown-wrap { position: relative; }
 
 .tag-editor-add-btn {
-  background: #f0f0f8;
-  border: 1px solid #d0d0e0;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   font-size: 11px;
   font-weight: 600;
-  color: #666;
+  color: var(--muted);
   padding: 3px 10px;
   cursor: pointer;
-  transition: background .12s;
+  transition: background .12s, color .12s, border-color .12s;
 }
-.tag-editor-add-btn:hover { background: #e0e0f0; }
+.tag-editor-add-btn:hover { background: var(--glass-bg); color: var(--accent); border-color: var(--glass-border); }
 
 .tag-editor-dropdown {
   position: absolute;
@@ -961,6 +973,91 @@ body {
   background: var(--grad-accent);
 }
 
+/* ── AutoScroll pill ─────────────────────────────────── */
+.autoscroll {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px 8px 8px;
+  background: rgba(20,20,31,.78);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: var(--shadow), var(--glow-soft);
+  z-index: 150;
+  transition: box-shadow .2s, border-color .2s;
+}
+.autoscroll.playing {
+  border-color: rgba(125,211,252,.5);
+  box-shadow: var(--shadow), var(--glow-accent);
+}
+
+.autoscroll-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--grad-accent);
+  color: #0f0f1a;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: transform .12s, box-shadow .2s;
+}
+.autoscroll-btn:hover { transform: scale(1.06); box-shadow: var(--glow-accent); }
+.autoscroll-btn:active { transform: scale(.96); }
+
+.autoscroll-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 140px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+.autoscroll-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--text);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 8px rgba(125,211,252,.5);
+  cursor: pointer;
+}
+.autoscroll-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--text);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 8px rgba(125,211,252,.5);
+  cursor: pointer;
+}
+
+.autoscroll-speed {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 700;
+  min-width: 22px;
+  text-align: right;
+  letter-spacing: .03em;
+}
+
 /* ── Mobile ──────────────────────────────────────────── */
 @media (max-width: 700px) {
   .sidebar {
@@ -981,7 +1078,10 @@ body {
   .mobile-hidden { display: none !important; }
 
   .song-header h1 { font-size: 22px; }
-  .partition { font-size: 14px; }
+  .partition { font-size: 14px; padding-bottom: 80px; }
+  .autoscroll { bottom: 14px; padding: 6px 12px 6px 6px; gap: 10px; }
+  .autoscroll-btn { width: 32px; height: 32px; font-size: 12px; }
+  .autoscroll-slider { width: 110px; }
   .delete-btn { opacity: 1; }
   .song-rename-btn { opacity: 1; }
   .song-edit-btn { opacity: 1; }
